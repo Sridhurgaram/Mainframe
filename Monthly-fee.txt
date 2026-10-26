@@ -1,0 +1,87 @@
+
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. MONTHLY-FEE.
+
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+
+       01 WS-N PIC 9(6).
+       01 WS-I PIC 9(6).
+
+       01 WS-INPUT-LINE PIC X(100).
+       01 WS-ACCOUNT-ID PIC X(10).
+       01 WS-CLOSING-TEXT PIC X(20).
+       01 WS-MINIMUM-TEXT PIC X(20).
+       01 WS-FEE-TEXT PIC X(20).
+
+       01 WS-CLOSING PIC 9(9)V99.
+       01 WS-MINIMUM PIC 9(9)V99.
+       01 WS-FEE PIC 9(9)V99.
+       01 WS-TOTAL PIC 9(11)V99 VALUE 0.
+
+       01 WS-FEE-OUT PIC Z(8)9.99.
+       01 WS-TOTAL-OUT PIC Z(10)9.99.
+
+       PROCEDURE DIVISION.
+
+           ACCEPT WS-N
+
+           PERFORM VARYING WS-I FROM 1 BY 1
+               UNTIL WS-I > WS-N
+
+               ACCEPT WS-INPUT-LINE
+
+               UNSTRING WS-INPUT-LINE
+                   DELIMITED BY ALL SPACE
+                   INTO WS-ACCOUNT-ID
+                        WS-CLOSING-TEXT
+                        WS-MINIMUM-TEXT
+                        WS-FEE-TEXT
+               END-UNSTRING
+
+               COMPUTE WS-CLOSING =
+                   FUNCTION NUMVAL(WS-CLOSING-TEXT)
+
+               COMPUTE WS-MINIMUM =
+                   FUNCTION NUMVAL(WS-MINIMUM-TEXT)
+
+               COMPUTE WS-FEE =
+                   FUNCTION NUMVAL(WS-FEE-TEXT)
+
+               IF WS-CLOSING < WS-MINIMUM
+
+                   IF WS-CLOSING >= WS-FEE
+
+                       COMPUTE WS-CLOSING =
+                           WS-CLOSING - WS-FEE
+
+                       ADD WS-FEE TO WS-TOTAL
+
+                       MOVE WS-FEE TO WS-FEE-OUT
+
+                       DISPLAY FUNCTION TRIM(WS-ACCOUNT-ID)
+                           " FEE COLLECTED "
+                           FUNCTION TRIM(WS-FEE-OUT)
+
+                   ELSE
+
+                       DISPLAY FUNCTION TRIM(WS-ACCOUNT-ID)
+                           " FEE NOT COLLECTED"
+
+                   END-IF
+
+               ELSE
+
+                   DISPLAY FUNCTION TRIM(WS-ACCOUNT-ID)
+                       " FEE WAIVED"
+
+               END-IF
+
+           END-PERFORM
+
+           MOVE WS-TOTAL TO WS-TOTAL-OUT
+
+           DISPLAY "Total fees: "
+               FUNCTION TRIM(WS-TOTAL-OUT)
+
+           STOP RUN.

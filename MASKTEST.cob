@@ -118,6 +118,7 @@
                END-EVALUATE
            END-IF.
 
+       
        WRITE-DEBUG-LOG.
            OPEN EXTEND LOG-FILE
 
@@ -129,10 +130,14 @@
                MOVE SPACES TO LOG-RECORD
 
                STRING
-                   'MASKED ID: ' DELIMITED BY SIZE
-                   FUNCTION TRIM(MASKED-ID) DELIMITED BY SIZE
-                   ' RESULT: ' DELIMITED BY SIZE
-                   FUNCTION TRIM(RESULT-MSG) DELIMITED BY SIZE
+                   'ACCOUNT ID: '
+                   DELIMITED BY SIZE
+                   MASKED-ID(1:ID-LENGTH)
+                   DELIMITED BY SIZE
+                   ' RESULT: '
+                   DELIMITED BY SIZE
+                   FUNCTION TRIM(RESULT-MSG)
+                   DELIMITED BY SIZE
                    INTO LOG-RECORD
                END-STRING
 
@@ -141,3 +146,4 @@
            ELSE
                DISPLAY 'LOG FILE ERROR'
            END-IF.
+
